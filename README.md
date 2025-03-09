@@ -3,11 +3,11 @@
 ⬆️ (Replace above with your app's name)
 ```
 
-Description of the app ...
+this app perform otp verification
 
 ## Demo App
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://app-starter-kit.streamlit.app/)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://otp_verificator.streamlit.app/)
 
 ## GitHub Codespaces
 
