@@ -33,7 +33,7 @@ def send_otp(receiver_email):
         return None, None
 
 # Streamlit App
-st.title("VIAJY")
+st.title("OTP VERIFICATION")
 
 
 hide_st_style = """
