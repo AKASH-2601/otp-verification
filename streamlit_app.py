@@ -2,17 +2,18 @@ import smtplib
 import random
 import string
 import time
-import tkinter as tk
-from tkinter import messagebox
+import streamlit as st
 from threading import Thread
 
 
+
+# Function to generate OTP
 def generate_otp():
     return ''.join(random.choices(string.digits, k=6))
 
-
+# Function to send OTP
 def send_otp(receiver_email):
-    sender_email = "akash26242931@gmail.com" 
+    sender_email = "akash26242931@gmail.com"
     sender_password = "sxyv poir uylt blfx"
 
     otp = generate_otp()
@@ -28,62 +29,45 @@ def send_otp(receiver_email):
 
         return otp, time.time()
     except Exception as e:
-        messagebox.showerror("Error", f"Failed to send OTP: {e}")
+        st.error(f"Failed to send OTP: {e}")
         return None, None
 
-
-def verify_otp():
-    global generated_otp, otp_timestamp
-    user_otp = otp_entry.get()
-    if time.time() - otp_timestamp > 60:
-        messagebox.showerror("Error", "OTP has expired! Request a new one.")
-        return
-    
-    if user_otp == generated_otp:
-        messagebox.showinfo("Success", "OTP Verified Successfully! ✅")
-        root.quit()
-    else:
-        messagebox.showerror("Error", "Invalid OTP. ❌ Try again.")
-
-def countdown():
-    timer_label = tk.Label(root, text="Time Left: 60s", font=("Arial", 12))
-    timer_label.pack(pady=10)
-    global otp_timestamp
-    remaining_time = 60
-    while remaining_time > 0:
-        timer_label.config(text=f"Time Left: {remaining_time}s")
-        time.sleep(1)
-        remaining_time -= 1
-    timer_label.config(text="OTP Expired!")
+# Streamlit App
+st.title("Login with OTP")
 
 
-def request_otp():
-    global generated_otp, otp_timestamp
-    email = email_entry.get()
+hide_st_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_st_style, unsafe_allow_html=True)
+
+email = st.text_input("Enter Email:")
+generated_otp = None
+otp_timestamp = None
+
+if st.button("Request OTP"):
     if not email:
-        messagebox.showerror("Error", "Please enter an email!")
-        return
-    
-    generated_otp, otp_timestamp = send_otp(email)
-    if generated_otp:
-        messagebox.showinfo("Success", "OTP Sent! Check your email.")
-        Thread(target=countdown, daemon=True).start()
+        st.error("Please enter an email!")
+    else:
+        generated_otp, otp_timestamp = send_otp(email)
+        if generated_otp:
+            st.success("OTP Sent! Check your email.")
+            st.session_state["generated_otp"] = generated_otp
+            st.session_state["otp_timestamp"] = otp_timestamp
+            st.session_state["otp_requested"] = True
 
+if "otp_requested" in st.session_state:
+    otp = st.text_input("Enter OTP:", max_chars=6)
 
-root = tk.Tk()
-root.title("Login with OTP")
-root.geometry("400x300")
+    if st.button("Verify OTP"):
+        if time.time() - st.session_state["otp_timestamp"] > 60:
+            st.error("OTP has expired! Request a new one.")
+        elif otp == st.session_state["generated_otp"]:
+            st.success("OTP Verified Successfully! ✅")
+        else:
+            st.error("Invalid OTP. ❌ Try again.")
 
-tk.Label(root, text="Enter Email:").pack(pady=5)
-email_entry = tk.Entry(root, width=30)
-email_entry.pack(pady=5)
-
-tk.Button(root, text="Request OTP", command=request_otp).pack(pady=5)
-
-tk.Label(root, text="Enter OTP:").pack(pady=5)
-otp_entry = tk.Entry(root, width=10)
-otp_entry.pack(pady=5)
-
-tk.Button(root, text="Verify OTP", command=verify_otp).pack(pady=5)
-
-root.mainloop()
