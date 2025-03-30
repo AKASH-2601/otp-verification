@@ -14,7 +14,7 @@ def generate_otp():
 # Function to send OTP
 def send_otp(receiver_email):
     sender_email = "akash26242931@gmail.com"
-    sender_password = "sxyv poir uylt blfx"
+    sender_password = "tqzt azhm ktyh bpze"
 
     otp = generate_otp()
     subject = "Your OTP Code"
