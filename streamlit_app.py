@@ -61,13 +61,14 @@ if st.button("Request OTP"):
 
 if "otp_requested" in st.session_state:
     otp = st.text_input("Enter OTP:", max_chars=6)
+    countdown_placeholder = st.empty()
     
     if "otp_timestamp" in st.session_state:
-        countdown_placeholder = st.empty()
         while time.time() - st.session_state["otp_timestamp"] < 60:
             remaining_time = max(0, 60 - (time.time() - st.session_state["otp_timestamp"]))
             countdown_placeholder.info(f"OTP expires in {int(remaining_time)} seconds")
             time.sleep(1)
+            st.rerun()
         countdown_placeholder.warning("OTP has expired! Request a new one.")
         st.session_state.pop("otp_requested", None)
         st.session_state.pop("generated_otp", None)
