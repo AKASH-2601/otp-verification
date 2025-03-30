@@ -5,6 +5,8 @@ import time
 import streamlit as st
 from threading import Thread
 
+
+
 # Function to generate OTP
 def generate_otp():
     return ''.join(random.choices(string.digits, k=6))
@@ -31,9 +33,9 @@ def send_otp(receiver_email):
         return None, None
 
 # Streamlit App
-st.title("OTP VERIFICATION")
+st.title("Login with OTP")
 
-# Hide Streamlit default style
+
 hide_st_style = """
             <style>
             #MainMenu {visibility: hidden;}
@@ -44,7 +46,6 @@ hide_st_style = """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
 email = st.text_input("Enter Email:")
-
 generated_otp = None
 otp_timestamp = None
 
@@ -61,23 +62,12 @@ if st.button("Request OTP"):
 
 if "otp_requested" in st.session_state:
     otp = st.text_input("Enter OTP:", max_chars=6)
-    countdown_placeholder = st.empty()
-    
-    if "otp_timestamp" in st.session_state:
-        while time.time() - st.session_state["otp_timestamp"] < 60:
-            remaining_time = max(0, 60 - (time.time() - st.session_state["otp_timestamp"]))
-            countdown_placeholder.info(f"OTP expires in {int(remaining_time)} seconds")
-            time.sleep(1)
-            st.rerun()
-        countdown_placeholder.warning("OTP has expired! Request a new one.")
-        st.session_state.pop("otp_requested", None)
-        st.session_state.pop("generated_otp", None)
-        st.session_state.pop("otp_timestamp", None)
-    
+
     if st.button("Verify OTP"):
-        if "otp_timestamp" not in st.session_state or time.time() - st.session_state["otp_timestamp"] > 60:
+        if time.time() - st.session_state["otp_timestamp"] > 60:
             st.error("OTP has expired! Request a new one.")
         elif otp == st.session_state["generated_otp"]:
             st.success("OTP Verified Successfully! ✅")
         else:
             st.error("Invalid OTP. ❌ Try again.")
+
